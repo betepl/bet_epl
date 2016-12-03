@@ -1,2 +1,3 @@
 # bet_epl
-Flak app for premier league betting
+Flak app for premier league betting.
+
