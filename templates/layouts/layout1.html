@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
-
 <head>
 
     <meta charset="utf-8">
@@ -13,7 +11,6 @@
 
     <!-- Bootstrap Core CSS -->
     <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Theme CSS -->
     <link href="/static/css/freelancer.min.css" rel="stylesheet">
 
@@ -39,32 +36,48 @@
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header page-scroll">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                    <span class="sr-only">Nawigacja</span> Menu <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="#page-top">Start Bootstrap</a>
+				<a href="/"><img src="/static/img/logo.png" alt="BetPremierLeague" style="float:left"></a>	
+            <!--    <a class="navbar-brand" href="#page-top">Dołącz do Bet Premier League</a>-->
             </div>
-
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
+			<br/ >
+			<br/ >
+			<br/ >
+			<br/ >
+			<br/ >
+			<br/ >
+			<br/ >
+			<br/ >
+                <ul class="nav navbar-nav">
                     <li class="hidden">
                         <a href="#page-top"></a>
                     </li>
-                    <li class="page-scroll">
-                        <a href="#portfolio">Portfolio</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#about">About</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#contact">Contact</a>
-                    </li>
+					<li><a href="/">Strona główna</a></li>
+					<li><a href="/bets">Obstawienia</a></li>
+					<li><a href="/lastgw">Poprzednia kolejka</a></li>
+					<li><a href="/rank">Statystyki</a></li>
+		{% if current_user.is_authenticated %}
+					<li style="float:right"><a href="{{ url_for('security.logout') }}">Wyloguj</a></li>
+					<li style="float:right"><a href="{{ url_for('profiles', email=current_user.email) }}">Moje konto</a></li>
+		{% else %}
+					<li style="float:right"><a href="/login">Logowanie</a></li>
+        {% endif %}
+<!--				<li style="float:right"><a href="/login">Logowanie</a></li> 
+					<li style="float:right"><a href="/profile">Moje konto</a></li>		-->	
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
         </div>
         <!-- /.container-fluid -->
     </nav>
+			<br/ >
+			<br/ >
+			<br/ >
+			<br/ >
+			<br/ >
     {% block content %}
     {% endblock %}
 
@@ -74,12 +87,11 @@
             <div class="container">
                 <div class="row">
                     <div class="footer-col col-md-4">
-                        <h3>Location</h3>
-                        <p>3481 Melrose Place
-                            <br>Beverly Hills, CA 90210</p>
+                        <h3>Lokalizacja</h3>
+                        <p>Poznan<br />Polska</p>
                     </div>
                     <div class="footer-col col-md-4">
-                        <h3>Around the Web</h3>
+                        <h3>Aplikacje społecznościowe</h3>
                         <ul class="list-inline">
                             <li>
                                 <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-facebook"></i></a>
@@ -93,14 +105,11 @@
                             <li>
                                 <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-linkedin"></i></a>
                             </li>
-                            <li>
-                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-dribbble"></i></a>
-                            </li>
                         </ul>
                     </div>
                     <div class="footer-col col-md-4">
-                        <h3>About Freelancer</h3>
-                        <p>Freelance is a free to use, open source Bootstrap theme created by <a href="http://startbootstrap.com">Start Bootstrap</a>.</p>
+                        <h3>O stronie</h3>
+                        <p>Bet Epl to aplikacja służąca obstawianiu meczy angielskiej Premier League</a>.</p>
                     </div>
                 </div>
             </div>
@@ -109,7 +118,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
-                        Copyright &copy; Your Website 2016
+                        BetPremierLeague © - BK | MJ | MP
                     </div>
                 </div>
             </div>
@@ -124,7 +133,7 @@
     </div>
 
     <!-- Portfolio Modals -->
-    <div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-hidden="true">
+     <!--    <div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-content">
             <div class="close-modal" data-dismiss="modal">
                 <div class="lr">
@@ -136,21 +145,21 @@
                 <div class="row">
                     <div class="col-lg-8 col-lg-offset-2">
                         <div class="modal-body">
-                            <h2>Project Title</h2>
+                            <h2>Bet Premier League</h2>
                             <hr class="star-primary">
                             <img src="/static/img/portfolio/cabin.png" class="img-responsive img-centered" alt="">
                             <p>Use this area of the page to describe your project. The icon above is part of a free icon set by <a href="https://sellfy.com/p/8Q9P/jV3VZ/">Flat Icons</a>. On their website, you can download their free set with 16 icons, or you can purchase the entire set with 146 icons for only $12!</p>
                             <ul class="list-inline item-details">
                                 <li>Client:
-                                    <strong><a href="http://startbootstrap.com">Start Bootstrap</a>
+                                    <strong><a href="https://bet-epl.wmi.amu.edu.pl">Dołącz do Bet Premier League</a>
                                     </strong>
                                 </li>
-                                <li>Date:
-                                    <strong><a href="http://startbootstrap.com">April 2014</a>
+                                <li>Data:
+                                    <strong><a href="https://bet-epl.wmi.amu.edu.pl">Styczeń 2016</a>
                                     </strong>
                                 </li>
-                                <li>Service:
-                                    <strong><a href="http://startbootstrap.com">Web Development</a>
+                                <li>Serwis:
+                                    <strong><a href="https://bet-epl.wmi.amu.edu.pl">Gry zakładowe</a>
                                     </strong>
                                 </li>
                             </ul>
@@ -345,7 +354,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- jQuery -->
     <script src="/static/vendor/jquery/jquery.min.js"></script>

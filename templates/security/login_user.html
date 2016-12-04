@@ -2,13 +2,19 @@
 {% from "security/_macros.html" import render_field_with_errors, render_field %}
 {% include "security/_messages.html" %}
 {% block title %}
-    Login Page
+    Logowanie
 {% endblock %}
 {% block content %}
 <br />
 <br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 <div class="container">
-    <h1>Login</h1>
+    <h1>Zaloguj się</h1>
     <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
       {{ login_user_form.hidden_tag() }}
       {{ render_field_with_errors(login_user_form.email) }}
@@ -17,6 +23,11 @@
       {{ render_field(login_user_form.next) }}
       {{ render_field(login_user_form.submit, class="btn btn-primary") }}
     </form>
-    {% include "security/_menu.html" %}
+    <h1>Nie posiadasz konta? Zarejestruj się teraz</h1>	
+	<a class="btn btn-primary" href="/register">Zarejestruj się</a>
+<br />
+<br />
+<br />
+   <!-- {% include "security/_menu.html" %}-->
 </div>
 {% endblock %}
