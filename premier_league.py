@@ -7,6 +7,8 @@ import gc
 from flask_sqlalchemy import SQLAlchemy
 from flask.ext.mail import Mail
 from flask.ext.security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin, login_required
+from flask_login import current_user
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -14,9 +16,22 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:bukmacher@localhost/epl'
 app.config['SECRET_KEY'] = 'super-secret'
 app.config['SECURITY_REGISTERABLE'] = True
+app.config['SECURITY_CONFIRMABLE'] = False
+app.config['SECURITY_RECOVERABLE'] = True
 app.config['SECURITY_PASSWORD_HASH'] = 'sha512_crypt'
 app.config['SECURITY_PASSWORD_SALT'] = 'fhasdgihwntlgy8f'
+app.config.update(dict(
+    DEBUG = True,
+    MAIL_SERVER = 'smtp.gmail.com',
+    MAIL_PORT = 587,
+    MAIL_USE_TLS = True,
+    MAIL_USE_SSL = False,
+    MAIL_USERNAME = 'malgorzata201b@gmail.com',
+    MAIL_PASSWORD = 'discombobulate80',
+))
 
+# Setup mail extension
+mail = Mail(app)
 
 app.debug = True
 db = SQLAlchemy(app)
@@ -114,6 +129,8 @@ db.create_all()
 
 @app.route('/')
 def index():
+	#if current_user.is_authenticated:
+	#	g_user = current_user.get_id()
 	#myUser = User.query.all()
 	#oneItem = User.query.filter_by(username="test2")
 	#oneItem = User.query.filter_by(username="test2").all()
@@ -129,8 +146,14 @@ def index():
 @app.route('/profile/<email>')
 #@login_required
 def profiles(email):
-    user = User.query.filter_by(email=email).first()
-    return render_template('profile.html', user=user)	
+	if current_user.is_authenticated:
+		g_user = current_user.get_id()
+	user = User.query.filter_by(email=current_user.email).first()
+	#user = User.query.filter_by(email = session['email']).first()
+	if user is None:
+		return redirect(url_for('login'))
+	else:
+		return render_template('profile.html', user=user)
 	
 @app.route('/post_user', methods=['POST'])
 def post_user():
@@ -146,54 +169,112 @@ def login():
 @app.route('/showSignUp')
 def showSignUp():
     return render_template('signup.html')
-@app.route('/signUp',methods=['POST'])
-def signUp():
+#@app.route('/signUp',methods=['POST'])
+#def signUp():
  
     # read the posted values from the UI
-    _name = request.form['inputName']
-    _email = request.form['inputEmail']
-    _password = request.form['inputPassword']
+#    _name = request.form['inputName']
+#    _email = request.form['inputEmail']
+#    _password = request.form['inputPassword']
 
     # validate the received values
     #if _name and _email and _password:
     #    return json.dumps({'html':'<span>All fields good !!</span>'})
     #else:
     #    return json.dumps({'html':'<span>Enter the required fields</span>'})
-    _hashed_password = generate_password_hash(_password)
+#    _hashed_password = generate_password_hash(_password)
     
     
-    conn=psycopg2.connect("dbname='postgres' user='postgres' password='bukmacher' host=localhost port=5432")
-    cursor = conn.cursor()
+#    conn=psycopg2.connect("dbname='postgres' user='postgres' password='bukmacher' host=localhost port=5432")
+#    cursor = conn.cursor()
 
-    x = cursor.execute("SELECT 1 FROM users WHERE username = %s", (_name,))
-    print(x)
-    if int(x) > 0:
-        flash("That username is already taken, please choose another")
+#    x = cursor.execute("SELECT 1 FROM users WHERE username = %s", (_name,))
+#    print(x)
+#    if int(x) > 0:
+#        flash("That username is already taken, please choose another")
     
-    else:
-        cursor.executemany("INSERT INTO users (username, password, email) VALUES (%(_username)s, %(_password)s, %(_email)s)")
-        items = cursor.fetchall()
-    print(items)
-    conn.commit()
+#    else:
+#        cursor.executemany("INSERT INTO users (username, password, email) VALUES (%(_username)s, %(_password)s, %(_email)s)")
+#        items = cursor.fetchall()
+#    print(items)
+#    conn.commit()
 @app.route('/info')
 def info():
     return render_template('info.html')
 @app.route('/account')
 def account():
     return render_template('account.html')
-@app.route('/bets')
-def bets():
-    return render_template('bets.html')
+	
+#perform statistics for teams and users
+def calculate_stats():
+	now = datetime.datetime.now()
+	if now.hour == 6 and now.minute == 0 and now.second == 0 and now.microsecond == 0:
+		conn=psycopg2.connect("dbname='epl' user='postgres' password='bukmacher' host=localhost port=5432")
+		cursor = conn.cursor()
+		cursor.execute("""SELECT * from game_week""")
+		rows = cursor.fetchall()
+		table_stats = []
+		for i in range(1,21):
+			match = 0
+			win = 0
+			loss = 0
+			draw = 0
+			gf_counter = 0
+			ga_counter = 0
+			gd_counter = 0
+			point_sum = 0    
+			for row in rows:
+				if row[0] is not None and row[1] is not None and row[5] is not None and row[6] is not None:
+					if (i == row[0] and row[5]>row[6]) or (i == row[1] and row[6]>row[5]):
+						 win = win+1
+					if (i == row[0] and row[5]<row[6]) or (i == row[1] and row[6]<row[5]):
+						loss = loss + 1
+					if (i == row[0] or i == row[1]) and( row[6] == row[5]):
+						draw = draw + 1				
+					if i == row[0]:
+						gf_counter = gf_counter + row[5]
+						ga_counter = ga_counter + row[6]		
+					if i == row[1]:
+						gf_counter = gf_counter + row[6]
+						ga_counter = ga_counter + row[5]
+			match=win+loss+draw
+			gd_counter = gf_counter - ga_counter;
+			point_sum = win*3 + draw;
+			table_stats.append((i, match, win, loss, draw, gf_counter, ga_counter, gd_counter, point_sum))
+		cursor.execute("DELETE FROM team_statistics;")	
+		for row in table_stats:
+		#    i = table_stats[0]
+		#    match = table_stats[1]
+		#    win = table_stats[2]
+		#    loss = table_stats[3]
+		#    draw = table_stats[4]
+		#    gf_counter = table_stats[5]
+		#    ga_counter = table_stats[6]
+		#    gd_counter = table_stats[7]
+		#    point_sum = table_stats[8]
+		# (i, match, win, loss, draw, gf_counter, ga_counter, gd_counter, point_sum)
+			cursor.executemany("""INSERT INTO team_statistics (team_id, matches, wins, loses, drawn, "GF", "GA", "GD", points) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""", (row,))
+		conn.commit()	
+	#print('Statistics calculated successfully')
+
+	
 @app.route('/rank')
 def rank():
-    conn=psycopg2.connect("dbname='postgres' user='postgres' password='bukmacher' host=localhost port=5432")
+	conn=psycopg2.connect("dbname='epl' user='postgres' password='bukmacher' host=localhost port=5432")
+	cursor = conn.cursor()
+	cursor.execute("""SELECT team_name, matches, wins, loses, drawn, "GF", "GA", "GD", points FROM team_statistics JOIN teams ON team_statistics.team_id = teams.team_id ORDER BY points DESC""")
+	items = cursor.fetchall()
+	return render_template('rank.html', items=items)
+@app.route('/bets')
+def bets():
+    conn=psycopg2.connect("dbname='epl' user='postgres' password='bukmacher' host=localhost port=5432")
     cursor = conn.cursor()
     cursor.execute("""SELECT match_date,team_home_name,"1","X","2",score_home,score_away, team_away_name from game_week where game_week=5""")
     items = cursor.fetchall()
-    return render_template('rank.html', items=items)
+    return render_template('bets.html', items=items)
 @app.route('/lastgw')
 def lastgw():
-    conn=psycopg2.connect("dbname='postgres' user='postgres' password='bukmacher' host=localhost port=5432")
+    conn=psycopg2.connect("dbname='epl' user='postgres' password='bukmacher' host=localhost port=5432")
     cursor = conn.cursor()
     cursor.execute("""SELECT match_date,team_home_name,score_home,score_away, team_away_name from game_week where game_week=4""")
     items = cursor.fetchall()
