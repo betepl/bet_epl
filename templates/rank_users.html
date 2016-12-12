@@ -1,0 +1,31 @@
+{% extends "layouts/layout1.html" %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
+{% include "security/_messages.html" %}
+{% block title %}
+    Ranking
+{% endblock %}
+{% block content %}
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+            <section id="content">
+				<center>
+				    <h1>Ranking użytkowników</h1>
+					<table border="6">
+							<tr>
+								<th><center><font size="5">Użytkownik</font></center></th>
+								<th><center><font size="5">Punkty</font></center></th>								
+							</tr>
+						{%for item in items:%}
+							<tr>
+							{%for i in item:%}
+								<th><center><font size="4">{% if i != None %}{{ i }}{% else %} 0 {% endif %}</font></center></th>
+						{%endfor%}								
+							</tr>
+						{%endfor%}
+					</table></center>
+            </section>
+{% endblock %}

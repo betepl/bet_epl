@@ -1,0 +1,107 @@
+{% extends "layouts/layout1.html" %}
+{% block title %}
+	Nowy zakład
+{% endblock %}
+
+{% block content %}
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<body>
+<div class="container">
+    <h1>Złóż nowy zakład</h1>
+            <section id="content">	
+<br/><br/><br/>
+				<center>
+				
+				<form name="request" action="{{ url_for('new_bet') }}" method="POST">
+							<input class="btn btn-primary" style="float:right" type="submit" href="{{ url_for('new_bet') }}"></input>
+					<table border="6">
+							<tr>
+								<th width="30%"><center><font size="5">LP</font></center></th>
+								<th width="30%"><center><font size="5">Data Meczu</font></center></th>
+								<th><center><font size="5">Gospodarze</font></center></th>
+								<th><center><font size="5">1</font></center></th>
+								<th><center><font size="5">X</font></center></th>
+								<th><center><font size="5">2</font></center></th>	
+								<th><center><font size="5">Wynik Gospodarze</font></center></th>
+								<th><center><font size="5">Wynik Goście</font></center></th>												
+								<th><center><font size="5">Goście</font></center></th>
+								<th><center><font size="5">Obstawiany Wynik</font></center></th>
+								<th><center><font size="5">Ilość obstawianych punktów</font></center></th>							
+							</tr>
+						{%for item in items:%}
+							<tr>
+							{%for i in item:%}
+								<th><center><font size="4">{% if i != None %}{{ i }}{% else %} 0 {% endif %}</font></center></th>
+						{%endfor%}<th ><center><font size="4">
+											<select name = "kto_{{ item[0] }}">
+											  <option value=" --- "> --- </option>
+											  <option value="Gospodarze">Gospodarze</option>
+											  <option value="Goście">Goście</option>
+											  <option value="Remis">Remis</option>
+											</select>
+									</font></center></th>
+			<th><center><font size="4">
+											<select name = "ile_{{ item[0] }}">
+											  <option value=" --- "> --- </option>
+											  <option value="1">1</option>
+											  <option value="2">2</option>
+											  <option value="3">3</option>
+											  <option value="4">4</option>
+											  <option value="5">5</option>
+											  <option value="6">6</option>
+											  <option value="7">7</option>
+											  <option value="8">8</option>
+											  <option value="9">9</option>
+											  <option value="10">10</option>
+											</select>
+			</font></center></th>										
+							<!-- <th><center><font size="4"><input type="text" id="bet" placeholder="zakład" onfocus="this.placeholder=''" onblur="this.placeholder='zakład'"></font></center></th>			-->				
+							</tr>
+						{%endfor%}
+					</table>		
+					</form>
+					<!--	<form name="Item_1" action="{{ url_for('new_bet') }}" method="POST">
+					    <select name="Item_1">
+					<option value="Red">Red</option>
+					<option value="Green">Green</option>        
+					</select>
+					<button type="submit">Compare!</button>
+				</form>
+					</center>
+	
+            </section>
+			<form action="{{ url_for('new_bet') }}" method=post class="add-entry custom">
+  <dl>
+    <dt>Title:
+    <dd><input type=text size=120 name=title>
+    <dt>Link:
+    <dd><input type=text size=120 name=link>
+    <dt>Shown:
+    <dd><input type=text size=120 name=shown>
+    <label for="customDropdown">Category</label>
+    <select style="display:none;" id="customDropdown" name="name">
+      {% for c in cate %}
+        {% if c.id == 1 %}
+          <option id="{{ c.name }}" name="{{ c.name }}" SELECTED>{{ c.name }}</option>
+        {% else %}
+          <option>{{ c.name }}</option>
+        {% endif %}
+
+      {% endfor %}
+    </select>
+    <dd><input class="success button" type=submit value=Post it!>
+    </dl>
+</form>	-->
+			
+</div>
+</body>
+{% endblock %}

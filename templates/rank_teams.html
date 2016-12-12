@@ -1,0 +1,38 @@
+{% extends "layouts/layout1.html" %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
+{% include "security/_messages.html" %}
+{% block title %}
+    Ranking
+{% endblock %}
+{% block content %}
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+            <section id="content">
+				<center>
+				    <h1>Ranking drużyn</h1>
+					<table border="6">
+							<tr>
+								<th><center><font size="5">Drużyna</font></center></th>
+								<th><center><font size="5">Mecze</font></center></th>
+								<th><center><font size="5">Wygrane</font></center></th>
+								<th><center><font size="5">Przegrane</font></center></th>
+								<th><center><font size="5">Remis</font></center></th>	
+								<th><center><font size="5">GF</font></center></th>
+								<th><center><font size="5">GA</font></center></th>												
+								<th><center><font size="5">GD</font></center></th>
+								<th><center><font size="5">Punkty</font></center></th>								
+							</tr>
+						{%for item in items:%}
+							<tr>
+							{%for i in item:%}
+								<th><center><font size="4">{% if i != None %}{{ i }}{% else %} 0 {% endif %}</font></center></th>
+						{%endfor%}								
+							</tr>
+						{%endfor%}
+					</table></center>
+            </section>
+{% endblock %}

@@ -32,7 +32,7 @@
 
     <!-- Navigation -->
     <nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
-        <div class="container">
+              <!--   <div class="container"> -->
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header page-scroll">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -58,17 +58,20 @@
 					<li><a href="/">Strona główna</a></li>
 					<li><a href="/bets">Obstawienia</a></li>
 					<li><a href="/lastgw">Poprzednia kolejka</a></li>
-					<li><a href="/rank">Statystyki</a></li>
+					<li><a href="/rank_teams">Ranking drużyn</a></li>
 		{% if current_user.is_authenticated %}
-					<li style="float:right"><a href="{{ url_for('security.logout') }}">Wyloguj</a></li>
-					<li style="float:right"><a href="{{ url_for('profiles', email=current_user.email) }}">Moje konto</a></li>
+					<li><a href="{{ url_for('rank_users') }}">Ranking użytkowników</a></li>
+					<li><a href="/new_bet">Nowy zakład</a></li>
+					<li style="float:right ; text-align:right"><a href="{{ url_for('security.logout') }}">Wyloguj</a></li>
+					<li style="float:right; text-align:right"><a href="{{ url_for('profiles', email=current_user.email) }}">Moje konto</a></li>
 		{% else %}
 					<li style="float:right"><a href="/login">Logowanie</a></li>
+					<li><a href="/register">Rejestracja</a></li>
         {% endif %}
 <!--				<li style="float:right"><a href="/login">Logowanie</a></li> 
 					<li style="float:right"><a href="/profile">Moje konto</a></li>		-->	
                 </ul>
-            </div>
+                <!--     </div> -->
             <!-- /.navbar-collapse -->
         </div>
         <!-- /.container-fluid -->

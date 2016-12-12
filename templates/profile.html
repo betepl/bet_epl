@@ -16,9 +16,46 @@
 <br />
 <body>
 
-    <h1>Profil {{ user.email }}</h1>
+    <h1>Witaj {{ user.email }}!</h1><h1> Jesteś obecnie na {{ items3[0][0] }} pozycji w rankingu</h1>
+<div class="container">
+            <section id="content">
+			<a class="btn btn-primary" href="{{ url_for('new_bet') }}">Nowy zakład</a>
+			    <h1>Twoje punkty</h1>
+					<table border="6">
+							<tr>
+								<th><center><font size="5">Dostępne</font></center></th>
+								<th><center><font size="5">Wygrane</font></center></th>
+							</tr>
+						{%for item in items:%}
+							<tr>
+							{%for i in item:%}
+								<th><center><font size="4">{% if i != None %}{{ i }}{% else %} 0 {% endif %}</font></center></th>
+						{%endfor%}								
+							</tr>
+						{%endfor%}
+					</table>
 
-    <h2>Email: {{ user.email }}</h2>
-
+			    <h1>Ostatnie zakłady</h1>
+					<table border="6">
+							<tr>
+								<th><center><font size="5">Tydzień</font></center></th>
+								<th><center><font size="5">Gospodarze</font></center></th>
+								<th><center><font size="5">Goście</font></center></th>
+								<th><center><font size="5">Zakład</font></center></th>
+								<th><center><font size="5">Postawione punkty</font></center></th>
+								<th><center><font size="5">Wygrana</font></center></th>								
+							</tr>
+							{%for item in items2:%}
+							<tr>
+							{%for i in item:%}
+								<th><center><font size="4">
+								{% if i == 'H' %}Gospodarze{% elif i == 'G'%}Goście{% elif i == 'D'%}Remis{% elif i != None %}{{ i }}{% else %} 0 {% endif %}
+								</font></center></th>
+						{%endfor%}								
+							</tr>
+						{%endfor%}
+					</table>
+            </section>
+</div>
 </body>
 {% endblock %}

@@ -26,8 +26,8 @@ app.config.update(dict(
     MAIL_PORT = 587,
     MAIL_USE_TLS = True,
     MAIL_USE_SSL = False,
-    MAIL_USERNAME = 'malgorzata201b@gmail.com',
-    MAIL_PASSWORD = 'discombobulate80',
+    MAIL_USERNAME = 'user@gmail.com',
+    MAIL_PASSWORD = 'password',
 ))
 
 # Setup mail extension
@@ -70,7 +70,7 @@ class User(db.Model, UserMixin):
 
 user_wallet = db.Table('user_wallet',
 		db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
-        db.Column('game_week', db.Integer(), db.ForeignKey('role.id')),
+        db.Column('game_week', db.Integer()),
 		db.Column('points_available', db.Integer()),
 		db.Column('points_won', db.Float()))
 		
@@ -144,16 +144,31 @@ def index():
 #    return render_template('profile.html', user=user)	
 	
 @app.route('/profile/<email>')
-#@login_required
+@login_required
 def profiles(email):
 	if current_user.is_authenticated:
 		g_user = current_user.get_id()
 	user = User.query.filter_by(email=current_user.email).first()
 	#user = User.query.filter_by(email = session['email']).first()
+	conn=psycopg2.connect("dbname='epl' user='postgres' password='bukmacher' host=localhost port=5432")
+	cursor = conn.cursor()
+	cursor.execute("""SELECT points_available, points_won FROM user_wallet where user_id=%s""", g_user)
+	items = cursor.fetchall()
+	cursor.execute("""SELECT  user_bets.game_week, game_week.team_home_name, game_week.team_away_name, user_bets.bet, user_bets.points_bet, user_bets.points_won FROM user_bets JOIN game_week ON game_week.match_id = user_bets.match_id  where user_bets.user_id=%s ORDER BY user_bets.match_id DESC LIMIT 10""", g_user)
+	items2 = cursor.fetchall()
+	#for item in items2:
+	#	if item[3] == 'H':
+	#		item[3] = item[1]
+	#	elif item[3] == 'G':
+	#		item[3] = item[2]
+	#	elif item[3] == 'D':
+	#		item[3] = 'REMIS'
+	cursor.execute("""SELECT RowNr FROM (SELECT  user_id, ROW_NUMBER() OVER (ORDER BY points_won DESC) AS RowNr, points_won from user_wallet) sub where sub.user_id = %s""", g_user)
+	items3 = cursor.fetchall()	
 	if user is None:
 		return redirect(url_for('login'))
 	else:
-		return render_template('profile.html', user=user)
+		return render_template('profile.html', user=user, items=items, items2=items2, items3=items3)
 	
 @app.route('/post_user', methods=['POST'])
 def post_user():
@@ -256,15 +271,25 @@ def calculate_stats():
 			cursor.executemany("""INSERT INTO team_statistics (team_id, matches, wins, loses, drawn, "GF", "GA", "GD", points) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""", (row,))
 		conn.commit()	
 	#print('Statistics calculated successfully')
-
+#update weekly users wallets and add value for new user (partially - because points_won should be set to 0 probably)
+#UPDATE user_wallet SET points_available = 10 
+#WHERE user_id is not NULL 
 	
-@app.route('/rank')
-def rank():
+@app.route('/rank_teams')
+def rank_teams():
 	conn=psycopg2.connect("dbname='epl' user='postgres' password='bukmacher' host=localhost port=5432")
 	cursor = conn.cursor()
 	cursor.execute("""SELECT team_name, matches, wins, loses, drawn, "GF", "GA", "GD", points FROM team_statistics JOIN teams ON team_statistics.team_id = teams.team_id ORDER BY points DESC""")
 	items = cursor.fetchall()
-	return render_template('rank.html', items=items)
+	return render_template('rank_teams.html', items=items)
+@app.route('/rank_users')
+@login_required
+def rank_users():
+	conn=psycopg2.connect("dbname='epl' user='postgres' password='bukmacher' host=localhost port=5432")
+	cursor = conn.cursor()
+	cursor.execute("""SELECT email, points_won FROM "user" INNER JOIN user_wallet ON "user".id = user_wallet.user_id ORDER BY points_won DESC""")
+	items = cursor.fetchall()
+	return render_template('rank_users.html', items=items)	
 @app.route('/bets')
 def bets():
     conn=psycopg2.connect("dbname='epl' user='postgres' password='bukmacher' host=localhost port=5432")
@@ -272,6 +297,41 @@ def bets():
     cursor.execute("""SELECT match_date,team_home_name,"1","X","2",score_home,score_away, team_away_name from game_week where game_week=5""")
     items = cursor.fetchall()
     return render_template('bets.html', items=items)
+	
+@app.route('/new_bet', methods=['POST', 'GET'])
+@login_required
+def new_bet():
+	conn=psycopg2.connect("dbname='epl' user='postgres' password='bukmacher' host=localhost port=5432")
+	cursor = conn.cursor()
+	cursor.execute("""SELECT match_date,team_home_name,"1","X","2",score_home,score_away, team_away_name from game_week where game_week=5""")
+	items = cursor.fetchall()
+	#return render_template('new_bet.html', items=items)
+	#@app.route('/add')
+	#def add_entry():
+    #if not session.get('logged_in'):
+     #   abort(401)
+	#title = request.form['title']
+	#link  = request.form['link']
+	#shown  = request.form['shown']
+	#request.form['name']
+
+    #I hardcoded the id here too see basic function.
+
+	#kate = Category.query.filter_by(id = 2).first()
+	#add_into = Entries(title, link, shown, kate)
+	#db.session.add(add_into)
+	#db.session.commit()
+	if request.method == 'POST':
+		from pprint import pprint as pp
+		print(request.form)
+		print(request.json)
+		
+		
+	
+	items = [[a] + list(alist) for a, alist in enumerate(items)]
+	print(type(items[0]))
+	return render_template('new_bet.html', items=items)
+	
 @app.route('/lastgw')
 def lastgw():
     conn=psycopg2.connect("dbname='epl' user='postgres' password='bukmacher' host=localhost port=5432")
